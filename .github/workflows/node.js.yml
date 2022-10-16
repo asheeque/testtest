@@ -15,10 +15,6 @@ jobs:
 
     if: github.ref == 'refs/heads/main'
 
-    strategy:
-      matrix:
-        node-version: [14.x]
-
     steps:
       - uses: actions/checkout@v2
 
@@ -26,12 +22,14 @@ jobs:
       - run: npm run build
       - run: npm run test
 
-      - name: rsync deployments
-        uses: burnett01/rsync-deployments@5.1
-        with:
-          switches: -avzr --delete
-          path: ./*
-          remote_path: /var/www/my-app/
-          remote_host: ec2-3-226-212-199.compute.amazonaws.com
-          remote_user: ubuntu
-          remote_key: "${{ secrets.SSH_PRIVATE_KEY }}"
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-rltgoDzvO --delete"
+          SOURCE: "/var/www/my-app/"
+          REMOTE_HOST: ec2-3-226-212-199.compute.amazonaws.com
+          REMOTE_USER: ubuntu
+          TARGET: ${{ secrets.REMOTE_TARGET }}
+          EXCLUDE: "/dist/, /node_modules/"
+          
