@@ -3,7 +3,8 @@ name: CI
 on:
   push:
     branches: [ master ]
-  
+  pull_request:
+    branches: [ master ]
 
   workflow_dispatch:
 
@@ -12,11 +13,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
 
     strategy:
       matrix:
-        node-version: [14.x,12.x]
+        node-version: [14.x]
 
     steps:
       - uses: actions/checkout@v2
